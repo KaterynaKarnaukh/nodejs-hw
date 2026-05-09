@@ -9,7 +9,14 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(pinoHttp());
+app.use(
+  pinoHttp({
+    transport:
+      process.env.NODE_ENV !== 'production'
+        ? { target: 'pino-pretty', options: { colorize: true } }
+        : undefined,
+  }),
+);
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
 
@@ -28,7 +35,7 @@ app.get('/test-error', () => {
 
 // ─── 404 Middleware ───────────────────────────────────────────────────────────
 
-app.use((_req, res) => {
+app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
