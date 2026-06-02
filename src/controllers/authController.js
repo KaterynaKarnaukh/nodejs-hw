@@ -13,7 +13,6 @@ export const registerUser = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const user = await User.create({ email, password: hashedPassword });
 
   const session = await createSession(user._id);
@@ -52,6 +51,10 @@ export const refreshUserSession = async (req, res) => {
   }
 
   if (new Date() > session.refreshTokenValidUntil) {
+    await Session.deleteOne({ _id: session._id });
+    res.clearCookie('sessionId');
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
     throw createHttpError(401, 'Session token expired');
   }
 
@@ -76,4 +79,3 @@ export const logoutUser = async (req, res) => {
 
   res.status(204).send();
 };
- 
