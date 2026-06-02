@@ -79,3 +79,4 @@ export const logoutUser = async (req, res) => {
 
   res.status(204).send();
 };
+ 
